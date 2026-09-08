@@ -1,0 +1,149 @@
+{
+ "designations": {
+  "AMIT": {
+   "count": 6,
+   "era": "discovered",
+   "name": ""
+  },
+  "CIVI": {
+   "count": 4,
+   "era": "discovered",
+   "name": ""
+  },
+  "GCSI": {
+   "count": 4,
+   "era": "discovered",
+   "name": ""
+  },
+  "HUAD": {
+   "count": 6,
+   "era": "discovered",
+   "name": ""
+  },
+  "MATH": {
+   "count": 5,
+   "era": "discovered",
+   "name": ""
+  },
+  "QTRS": {
+   "count": 3,
+   "era": "discovered",
+   "name": ""
+  },
+  "SCIT": {
+   "count": 4,
+   "era": "discovered",
+   "name": ""
+  },
+  "SOBE": {
+   "count": 5,
+   "era": "discovered",
+   "name": ""
+  },
+  "SUST": {
+   "count": 5,
+   "era": "discovered",
+   "name": ""
+  }
+ },
+ "elective_phrases": {
+  "advanced skills course": 1,
+  "capstone course": 2,
+  "dce upper division elective": 1,
+  "finance elective": 1,
+  "international business course": 1,
+  "jmc or mco upper division elective": 2,
+  "major electives": 1,
+  "personal movement practice": 2,
+  "related area course": 4,
+  "science and society elective": 1,
+  "sobe track course": 1,
+  "technical elective": 1
+ },
+ "section_names": {
+  "aerospace engineering major": 8,
+  "american institutions": 6,
+  "bs degree requirement - science and society": 2,
+  "bs neuroscience major": 12,
+  "business capstone": 1,
+  "business core": 6,
+  "dance electives": 2,
+  "dance major": 8,
+  "finance major": 6,
+  "first year business course": 1,
+  "first-year composition": 6,
+  "global communities societies and individuals": 4,
+  "governance and civic engagement": 4,
+  "honors credit": 2,
+  "honors foundations": 1,
+  "honors thesis": 1,
+  "humanities arts and design": 6,
+  "journalism major": 23,
+  "mathematics proficiency": 1,
+  "other business interdisciplinary courses": 4,
+  "personal movement practice": 2,
+  "quantitative reasoning": 3,
+  "related area": 4,
+  "scientific thinking in natural sciences": 4,
+  "second language": 1,
+  "sobe track": 1,
+  "social and behavioral sciences": 3,
+  "technical electives": 2,
+  "the asu experience": 3,
+  "total hours": 6,
+  "ud hours check": 1
+ },
+ "subjects": {
+  "ACC": 13,
+  "AEE": 10,
+  "AGB": 1,
+  "ASB": 4,
+  "ASU": 4,
+  "BCH": 3,
+  "BIO": 33,
+  "BME": 7,
+  "CEE": 1,
+  "CHE": 1,
+  "CHM": 21,
+  "CIS": 4,
+  "COM": 1,
+  "DCE": 42,
+  "DSC": 3,
+  "ECN": 10,
+  "EEE": 6,
+  "ENG": 22,
+  "FIN": 18,
+  "GEN": 3,
+  "HCR": 6,
+  "HON": 11,
+  "HST": 8,
+  "HUM": 1,
+  "JMC": 64,
+  "KIN": 1,
+  "LES": 1,
+  "LIA": 11,
+  "LWR": 3,
+  "MAE": 1,
+  "MAT": 24,
+  "MGT": 3,
+  "MKT": 3,
+  "MSE": 1,
+  "NEU": 21,
+  "PAF": 2,
+  "PHY": 7,
+  "POS": 2,
+  "PSY": 10,
+  "SCM": 3,
+  "SES": 1,
+  "SHS": 5,
+  "SOC": 1,
+  "SPA": 3,
+  "STP": 5,
+  "STS": 1,
+  "SWU": 2,
+  "THE": 1,
+  "WPC": 8
+ },
+ "updated": "2026-09-03",
+ "version": 1
+}

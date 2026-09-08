@@ -1,0 +1,66 @@
+create function public.assert_true(ok boolean,label text) returns void language plpgsql as $$ begin if ok is distinct from true then raise exception 'FAILED: %',label; end if; end $$;
+create function public.assert_denied(statement text,label text) returns void language plpgsql security invoker as $$
+begin
+ begin execute statement;
+ exception when insufficient_privilege or sqlstate 'PT404' or foreign_key_violation or sqlstate 'PT409' or sqlstate 'PT422' or sqlstate 'PT429' then return;
+ end;
+ raise exception 'FAILED: allowed %',label;
+end $$;
+insert into auth.users values('11111111-1111-4111-8111-111111111111'),('22222222-2222-4222-8222-222222222222');
+set role anon;
+select public.assert_denied('select * from public.profiles','anonymous profile read');
+select public.assert_denied('select public.ensure_profile()','anonymous RPC');
+reset role;
+set role authenticated;
+set request.jwt.claim.sub='11111111-1111-4111-8111-111111111111';
+select public.ensure_profile();
+select public.init_upload('[100]','{}')->>'id' as job_a \gset
+select public.assert_denied('select public.worker_claim('''||:'job_a'||''')','user cannot claim worker');
+select public.assert_denied('select public.auth_rate_limit(''x'')','user cannot invoke privileged rate limiter');
+select public.assert_denied('select public.worker_tombstones()','no tombstone access');
+select public.assert_denied('insert into public.profiles(user_id) values(''33333333-3333-4333-8333-333333333333'')','no forged ownership');
+insert into storage.objects(bucket_id,name,metadata) values('audit-uploads','11111111-1111-4111-8111-111111111111/'||:'job_a'||'/1.pdf','{"size":100}');
+select public.assert_true((select count(*)=0 from storage.objects),'originals cannot be read');
+select public.enqueue_analysis(:'job_a');
+select public.enqueue_analysis(:'job_a');
+select public.assert_denied('insert into storage.objects(bucket_id,name,metadata) values(''audit-uploads'',''11111111-1111-4111-8111-111111111111/'||:'job_a'||'/2.pdf'',''{}'')','only initialized objects');
+set request.jwt.claim.sub='22222222-2222-4222-8222-222222222222';
+select public.ensure_profile();
+select public.assert_true((select count(*)=0 from public.analysis_jobs),'other account jobs hidden');
+select public.assert_denied('select public.enqueue_analysis('''||:'job_a'||''')','other account dispatch');
+select public.assert_denied('insert into storage.objects(bucket_id,name,metadata) values(''audit-uploads'',''11111111-1111-4111-8111-111111111111/'||:'job_a'||'/1.pdf'',''{}'')','cross-account storage write');
+reset role;
+set role service_role;
+select public.assert_true(public.worker_claim(:'job_a')->>'attempts'='1','first claim');
+select public.assert_true(public.worker_claim(:'job_a') is null,'duplicate claim inert');
+select public.assert_true(public.worker_finish(:'job_a',2,'[]','{}','test') is null,'stale delivery inert');
+select public.worker_finish(:'job_a',1,'[]','{}','test') as plan_a \gset
+select public.assert_true(public.worker_finish(:'job_a',1,'[]','{}','test') is null,'duplicate finish inert');
+select audit_id from public.plans where id=:'plan_a' \gset
+reset role;
+set role authenticated;
+set request.jwt.claim.sub='22222222-2222-4222-8222-222222222222';
+do $$ declare t text;n integer;begin foreach t in array array['analysis_jobs','audits','plans','plan_revisions','security_events'] loop execute format('select count(*) from public.%I',t) into n;perform public.assert_true(n=0,'cross-user read '||t);end loop;end $$;
+select public.assert_denied('select public.create_plan('''||:'audit_id'||''',''forged'',''{}'',''{}'')','cross-account parent');
+select public.assert_denied('select public.save_plan('''||:'plan_a'||''',1,''{}'',''{}'')','cross-account save');
+select public.delete_item('plan',:'plan_a');
+select public.delete_item('audit',:'audit_id');
+set request.jwt.claim.sub='11111111-1111-4111-8111-111111111111';
+select public.assert_true((select count(*)=1 from public.plans),'cross-account deletes inert');
+select public.assert_true((public.save_plan(:'plan_a',1,'{}','{}')->>'revision')::int=2,'revision increments');
+select public.assert_denied('select public.save_plan('''||:'plan_a'||''',1,''{}'',''{}'')','stale revision rejected');
+select public.assert_true((select count(*)=2 from public.plan_revisions),'revision history retained');
+select public.assert_denied('update public.plans set user_id=''22222222-2222-4222-8222-222222222222''','immutable ownership');
+select public.delete_item('audit',:'audit_id');
+select public.assert_true((select count(*)=0 from public.plans),'audit cascade');
+select public.assert_true((select count(*)=1 from public.analysis_jobs),'opaque cleanup manifest retained');
+select public.begin_account_deletion();
+select public.assert_denied('select public.ensure_profile()','deleting profile cannot work');
+reset role;
+delete from auth.users where id='11111111-1111-4111-8111-111111111111';
+select public.assert_true((select count(*)=1 from private.upload_tombstones),'cleanup survives account deletion');
+select public.worker_clear_tombstone(:'job_a');
+select public.assert_true((select count(*)=1 from private.upload_tombstones),'live upload capability cleanup retained');
+update private.upload_tombstones set expires_at=now()-interval '1 second';
+select public.worker_clear_tombstone(:'job_a');
+select public.assert_true((select count(*)=0 from private.upload_tombstones),'expired cleaned tombstone removed');

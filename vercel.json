@@ -1,0 +1,43 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "frontend/",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "engine",
+          "format": "url",
+          "env": "ENGINE_URL"
+        }
+      ]
+    },
+    "engine": {
+      "root": ".",
+      "framework": "fastapi",
+      "entrypoint": "backend.main:app",
+      "functions": {
+        "backend/**/*.py": {
+          "maxDuration": 300,
+          "memory": 2048,
+          "excludeFiles": "{frontend/**,docs/**,scripts/**,tests/**,backend/tests/**,DARS/**,**/*.pdf,**/*.db*,backend/legacy_app.py,backend/auth.py,backend/audit_library.py,backend/store.py}"
+        }
+      }
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web"
+      }
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/maintenance",
+      "schedule": "0 4 * * *"
+    }
+  ]
+}

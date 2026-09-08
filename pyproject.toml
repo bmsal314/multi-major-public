@@ -1,0 +1,20 @@
+[project]
+name = "multi-major-engine"
+version = "0.2.0"
+requires-python = ">=3.11,<3.13"
+dynamic = ["dependencies"]
+[tool.setuptools.dynamic]
+dependencies = {file = ["backend/requirements.lock"]}
+[tool.setuptools.packages.find]
+include = ["backend*"]
+[[tool.vercel.subscribers]]
+entrypoint = "backend.cloud.worker:consume_analysis"
+
+[tool.pytest.ini_options]
+# `private-release/` holds published copies of the repository, including copies
+# of `tests/cloud/test_platform.py`. Collecting from the root then imports two
+# files under one module path and pytest refuses the whole run, so the suite
+# could only ever be started by naming directories. Publication artifacts are
+# outputs, not tests.
+norecursedirs = ["private-release", "release", ".venv", "backend/.venv", "node_modules", ".git"]
+testpaths = ["backend/tests", "tests"]

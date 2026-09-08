@@ -1,0 +1,36 @@
+name: Verify student pilot
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python -m venv backend/.venv
+      - run: backend/.venv/bin/pip install -r backend/requirements-dev.txt
+      - run: npm --prefix frontend ci
+      - run: make test
+      - run: POSTGRES_BIN="$(pg_config --bindir)" make test-db
+      - run: make audit
+      - run: make build
+      - run: backend/.venv/bin/python scripts/prepare_release.py --check
+      - run: backend/.venv/bin/playwright install --with-deps chromium
+      - run: |
+          # The harness checks that a signed-out visitor still receives a CSRF
+          # token, which the app cannot issue without its own internal secret.
+          # Supabase stays unconfigured on purpose: this is the fail-closed state.
+          export INTERNAL_API_SECRET="ci-synthetic-not-a-real-secret-0000000000"
+          npm --prefix frontend run start > /tmp/multi-major-ui.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:3000 >/dev/null && break; sleep 1; done
+          make test-ui

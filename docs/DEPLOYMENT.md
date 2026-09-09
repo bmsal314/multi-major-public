@@ -1,8 +1,6 @@
 # Deployment: synthetic staging first
 
-For a step-by-step walkthrough with commands, expected output and per-step checkpoints, open
-[`deployment-guide.html`](deployment-guide.html) from disk. It is offline and self-contained; this
-page is the same material in prose and remains the reference for the reasoning behind each choice.
+This page covers the reasoning behind each deployment choice; see the Makefile targets below for the exact commands.
 
 No resources have been provisioned. Do not enable registrations or accept real student records until the staging gates in VERIFICATION.md pass. Paid provisioning requires the owner's approval.
 

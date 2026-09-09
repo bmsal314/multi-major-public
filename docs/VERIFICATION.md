@@ -23,7 +23,6 @@
 - Planning preferences were validated only by the service, whose refusal is a deliberately generic 422; a credit minimum above the ceiling or a cleared number field produced an unexplained failure. The fields are validated before submission, and the submit button says which of the four conditions is blocking it.
 - The pre-med checklist read course placements from the plan the service last built rather than the map on screen, so it named the old term after any move.
 - The results footer rendered mid-page with a panel below it, and the header, workspace, results and footer each used a different width and padding, so no two shared a left edge. All regions now sit on one rail and the workspace is a two-column layout.
-- `docs/deployment-guide.html`, a self-contained offline runbook, is new in this pass.
 
 ## UI checks
 

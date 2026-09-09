@@ -9,7 +9,7 @@ ROOT_FILES={'.gitignore','.vercelignore','.env.example','.python-version','pypro
 # frontend/next.config.js, which sets every response security header. A snapshot
 # missing either one deploys, but without a schema or without those headers.
 SUFFIXES={'.py','.ts','.tsx','.mts','.js','.mjs','.cjs','.json','.css','.html','.md','.sql','.yml','.yaml','.toml','.txt','.lock','.sh'}
-REQUIRED={'supabase/migrations/202608280001_platform.sql','frontend/next.config.js','vercel.json','.env.example','docs/deployment-guide.html'}
+REQUIRED={'supabase/migrations/202608280001_platform.sql','frontend/next.config.js','vercel.json','.env.example'}
 SECRET_PATTERNS=[rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',rb'\b(?:ghp_|github_pat_|sb_secret_|sk_live_)[A-Za-z0-9_\-]{20,}',rb'\bAKIA[A-Z0-9]{16}\b',rb'\beyJ[A-Za-z0-9_-]{25,}\.eyJ[A-Za-z0-9_-]{25,}\.[A-Za-z0-9_-]{20,}']
 def git(*args,cwd=ROOT):return subprocess.check_output(['git',*args],cwd=cwd)
 def allowed(path):
